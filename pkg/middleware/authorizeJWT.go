@@ -2,14 +2,13 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/ecom/pkg/controller"
 	"net/http"
 
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
 
-//AuthorizeJWT -> to authorize JWT Token
+// AuthorizeJWT -> to authorize JWT Token
 func AuthorizeJWT() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		const BearerSchema string = "Bearer "
@@ -21,15 +20,14 @@ func AuthorizeJWT() gin.HandlerFunc {
 		}
 		tokenString := authHeader[len(BearerSchema):]
 
-		if token, err := controller.ValidateToken(tokenString); err != nil {
-
+		token, err := ValidateToken(tokenString)
+		if err != nil {
 			fmt.Println("token", tokenString, err.Error())
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"error": "Not Valid Token"})
-
 		} else {
-
-			if claims, ok := token.Claims.(jwt.MapClaims); !ok {
+			claims, ok := token.Claims.(jwt.MapClaims)
+			if !ok {
 				ctx.AbortWithStatus(http.StatusUnauthorized)
 
 			} else {

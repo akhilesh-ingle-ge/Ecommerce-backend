@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/ecom/pkg/config"
+	"github.com/ecom/pkg/middleware"
 	"github.com/ecom/pkg/model"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -59,7 +60,7 @@ func SignInUser(c *gin.Context) {
 
 	if isTrue := ComparePassword(dbUser.Password, user.Password); isTrue {
 		fmt.Println("user before", dbUser.ID)
-		token := GenerateToken(dbUser.ID)
+		token := middleware.GenerateToken(dbUser.ID)
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Successfully SignIN",
 			"token":   token,
@@ -146,3 +147,73 @@ func GetProductOrdered(c *gin.Context) {
 		"data": orders,
 	})
 }
+
+//===============================================================================
+//====================                 OTP                   ====================
+//===============================================================================
+
+// type Detail struct {
+// 	Email string `json:"email" binding:"required"`
+// }
+
+// type Login struct {
+// 	Otp int `json:"otp" binding:"required"`
+// }
+
+// var otp int
+
+// func generateOTP() int {
+// 	rand.Seed(time.Now().UnixNano())
+// 	min_num := 1111
+// 	max_num := 9999
+// 	num := rand.Intn(max_num-min_num+1) + min_num
+// 	return num
+// }
+
+// func OtpSignInUser(c *gin.Context) {
+// 	var mailId Detail
+// 	c.ShouldBindJSON(&mailId)
+// 	to_mail := mailId.Email
+// 	fmt.Printf("The mail id is %v\n", to_mail)
+// 	fmt.Printf("The type is %T\n", to_mail)
+
+// 	// get user password
+// 	user := os.Getenv("USER")
+// 	password := os.Getenv("PASS")
+
+// 	// message template
+// 	m := gomail.NewMessage()
+// 	m.SetHeader("From", user)
+// 	m.SetHeader("To", to_mail)
+// 	m.SetHeader("Subject", "OTP Verification")
+// 	otp = generateOTP()
+// 	body := fmt.Sprintf("OTP for Signin: %v", otp)
+// 	m.SetBody("text/plain", body)
+
+// 	// Send message
+// 	d := gomail.NewDialer("smtp.gmail.com", 587, user, password)
+
+// 	err := d.DialAndSend(m)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	c.JSON(http.StatusOK, gin.H{
+// 		"message": "OTP sent Successfully",
+// 	})
+// }
+
+// func OtpVerify(c *gin.Context) {
+// 	var verify Login
+// 	c.ShouldBindJSON(&verify)
+// 	if otp == verify.Otp {
+// 		token := middleware.OtpGenerateToken()
+// 		c.JSON(http.StatusOK, gin.H{
+// 			"message": "Successfully SignedIN",
+// 			"token":   token,
+// 		})
+// 	} else {
+// 		c.JSON(http.StatusOK, gin.H{
+// 			"message": "OTP is incorrect",
+// 		})
+// 	}
+// }

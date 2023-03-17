@@ -18,11 +18,16 @@ func RunAPI() {
 	})
 
 	apiRoutes := router.Group("/api")
+
 	userRoutes := apiRoutes.Group("/user")
 
 	{
 		userRoutes.POST("/register", controller.AddUser)
 		userRoutes.POST("/signin", controller.SignInUser)
+
+		// with otp
+		// userRoutes.POST("/signin", controller.OtpSignInUser)
+		// userRoutes.POST("/verify", controller.OtpVerify)
 	}
 
 	userProtectedRoutes := apiRoutes.Group("/users", middleware.AuthorizeJWT())
